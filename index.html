@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出行计划方案</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f5f1e6, #f0e6d2, #e8dcc8);
+            scroll-behavior: smooth;
+        }
+        
+        .ac-style {
+            background: #fefdf8;
+            border: 3px solid #c9b49d;
+            border-radius: 20px;
+            box-shadow: 
+                0 4px 0 #b8a48f,
+                0 8px 16px rgba(0,0,0,0.05);
+        }
+        
+        .ac-button {
+            background: #c9b49d;
+            border: 2px solid #a8947f;
+            border-radius: 15px;
+            color: white;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 0 #a8947f;
+        }
+        
+        .ac-button:hover {
+            background: #a8947f;
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #a8947f;
+        }
+        
+        .ac-card {
+            background: #fdf8ee;
+            border: 3px solid #d4c5af;
+            border-radius: 18px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 0 #c9b49d;
+            transition: all 0.3s ease;
+        }
+        
+        .ac-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 0 #c9b49d;
+        }
+        
+        .ac-badge {
+            background: #d4c5af;
+            color: #5d4e3d;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            display: inline-block;
+            border: 2px solid #c9b49d;
+        }
+        
+        .ac-progress-bar {
+            height: 20px;
+            background: #e8dcc8;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #d4c5af;
+        }
+        
+        .ac-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c9b49d, #d4c5af);
+            border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+        
+        .section-title {
+            position: relative;
+            padding-left: 1.5rem;
+            color: #8c7a63;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .section-title::before {
+            content: '🌸';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .day-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #c9b49d, #d4c5af);
+            border: 3px solid #a8947f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 0 #a8947f;
+        }
+        
+        .animal-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .leaf-decoration {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .bubble {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: float-bubble 4s ease-in-out infinite;
+        }
+        
+        @keyframes float-bubble {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+            50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
+        }
+        
+        .weather-sunny {
+            color: #f5e0a0;
+            text-shadow: 0 0 10px rgba(245,224,160,0.5);
+        }
+        
+        .weather-cloudy {
+            color: #b8a48f;
+        }
+        
+        .weather-rainy {
+            color: #b0d4e3;
+        }
+        
+        .maple-leaf {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: fall 6s linear infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+    <!-- Decorative elements -->
+    <div class="leaf-decoration" style="top: 10%; left: 5%;">🍃</div>
+    <div class="leaf-decoration" style="top: 20%; right: 10%;">🌺</div>
+    <div class="leaf-decoration" style="bottom: 15%; left: 15%;">🌻</div>
+    <div class="leaf-decoration" style="bottom: 25%; right: 20%;">🌼</div>
+    
+    <!-- Floating bubbles -->
+    <div class="bubble" style="left: 10%; top: 20%; animation-delay: 0s;"></div>
+    <div class="bubble" style="left: 30%; top: 40%; animation-delay: 1s;"></div>
+    <div class="bubble" style="left: 70%; top: 30%; animation-delay: 2s;"></div>
+    <div class="bubble" style="left: 90%; top: 60%; animation-delay: 3s;"></div>
+    
+    <!-- Falling leaves -->
+    <div class="maple-leaf" style="left: 5%; animation-delay: 0s;">🍂</div>
+    <div class="maple-leaf" style="left: 15%; animation-delay: 1s;">🍃</div>
+    <div class="maple-leaf" style="left: 25%; animation-delay: 2s;">🌸</div>
+    <div class="maple-leaf" style="left: 35%; animation-delay: 3s;">🌺</div>
+    <div class="maple-leaf" style="left: 45%; animation-delay: 4s;">🌻</div>
+    <div class="maple-leaf" style="left: 55%; animation-delay: 5s;">🌼</div>
+    <div class="maple-leaf" style="left: 65%; animation-delay: 6s;">🍁</div>
+    <div class="maple-leaf" style="left: 75%; animation-delay: 7s;">🍃</div>
+    <div class="maple-leaf" style="left: 85%; animation-delay: 8s;">🌺</div>
+    <div class="maple-leaf" style="left: 95%; animation-delay: 9s;">🌸</div>
+
+    <!-- Header -->
+    <header class="relative z-10 ac-style p-6 m-4 text-center">
+        <div class="animal-icon">🐿️</div>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">出行计划方案</h1>
+        <p class="text-lg text-gray-600 mb-4"> furry friends 推荐路线 🐾</p>
+        <div class="flex flex-wrap justify-center gap-2">
+            <span class="ac-badge">8月14日-17日</span>
+            <span class="ac-badge">3晚住宿</span>
+            <span class="ac-badge">含演出</span>
+            <span class="ac-badge">治愈系旅行</span>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="relative z-10 flex justify-center space-x-4 p-4">
+        <a href="#overview" class="ac-button px-4 py-2">概览</a>
+        <a href="#preparation" class="ac-button px-4 py-2">准备</a>
+        <a href="#days" class="ac-button px-4 py-2">每日行程</a>
+        <a href="#budget" class="ac-button px-4 py-2">预算</a>
+    </nav>
+
+    <!-- Overview Section -->
+    <section id="overview" class="py-8 relative z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="section-title mb-6">行程概览</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="ac-card">
+                    <div class="animal-icon">🐰</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-calendar-check text-amber-600 mr-2"></i>
+                        4日行程安排
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border-2 border-amber-200">
+                            <span class="font-bold text-amber-800">Day 1</span>
+                            <span>8/14 周五 - 抵达大阪购物</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
+                            <span class="font-bold text-blue-800">Day 2</span>
+                            <span>8/15 周六 - 环球影城</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border-2 border-purple-200">
+                            <span class="font-bold text-purple-800">Day 3</span>
+                            <span>8/16 周日 - 神户半日游 + 演出</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg border-2 border-orange-200">
+                            <span class="font-bold text-orange-800">Day 4</span>
+                            <span>8/17 周一 - 告别大阪返程</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🐨</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-home text-purple-600 mr-2"></i>
+                        住宿推荐
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="p-4 border-3 border-blue-200 bg-blue-50 rounded-xl">
+                            <h4 class="font-bold text-gray-800 text-lg">🏠 心齋橋哈頓酒店</h4>
+                            <p class="text-sm text-gray-600 mt-1">位置优越，地铁便利，免费行李寄存</p>
+                            <p class="text-sm text-blue-600 font-bold">💰 ¥200-300/晚</p>
+                        </div>
+                        <div class="p-4 border-3 border-green-200 bg-green-50 rounded-xl">
+                            <h4 class="font-bold text-gray-800 text-lg">🏨 KOKO HOTEL 難波</h4>
+                            <p class="text-sm text-gray-600 mt-1">2025年新开业，设施全新</p>
+                            <p class="text-sm text-green-600 font-bold">💰 ¥200-300/晚</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preparation Section -->
+    <section id="preparation" class="py-8 relative z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="section-title mb-6">出行准备</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="ac-card">
+                    <div class="animal-icon">🐸</div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">证件准备</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>护照有效期6个月以上</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>提前完成"Visit Japan Web"</li>
+                        <li class="flex items-center"><i class="fas fa-check-circle text-green-500 mr-2"></i>签证（如需要）</li>
+                    </ul>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🦆</div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">服装建议</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-sun text-yellow-500 mr-2"></i>轻薄透气衣物</li>
+                        <li class="flex items-center"><i class="fas fa-umbrella text-blue-500 mr-2"></i>防晒帽和太阳镜</li>
+                        <li class="flex items-center"><i class="fas fa-cloud-rain text-gray-500 mr-2"></i>雨具（8月多雨）</li>
+                    </ul>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🦉</div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">APP下载</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-bus text-blue-500 mr-2"></i>乘换案内（交通查询）</li>
+                        <li class="flex items-center"><i class="fas fa-map text-green-500 mr-2"></i>Google Maps</li>
+                        <li class="flex items-center"><i class="fas fa-globe text-purple-500 mr-2"></i>携程/马蜂窝</li>
+                    </ul>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🦊</div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">现金准备</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-yen-sign text-red-500 mr-2"></i>携带3-5万日元现金</li>
+                        <li class="flex items-center"><i class="fas fa-store text-orange-500 mr-2"></i>部分小店只收现金</li>
+                        <li class="flex items-center"><i class="fas fa-coins text-yellow-500 mr-2"></i>准备小额纸币</li>
+                    </ul>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🐼</div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">电器适配</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-bolt text-yellow-500 mr-2"></i>日本电压100V</li>
+                        <li class="flex items-center"><i class="fas fa-plug text-gray-500 mr-2"></i>两脚扁型插座</li>
+                        <li class="flex items-center"><i class="fas fa-exchange-alt text-blue-500 mr-2"></i>准备转换插头</li>
+                    </ul>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🦄</div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">网络服务</h3>
+                    <ul class="text-sm text-gray-600 space-y-1">
+                        <li class="flex items-center"><i class="fas fa-sim-card text-green-500 mr-2"></i>提前购买eSIM</li>
+                        <li class="flex items-center"><i class="fas fa-wifi text-blue-500 mr-2"></i>租用WiFi蛋</li>
+                        <li class="flex items-center"><i class="fas fa-mobile-alt text-purple-500 mr-2"></i>机场购买流量卡</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Days Section -->
+    <section id="days" class="py-8 relative z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="section-title mb-6">详细行程</h2>
+            <div class="space-y-6">
+                <!-- Day 1 -->
+                <div class="ac-card">
+                    <div class="flex items-center mb-4">
+                        <div class="day-number mr-4">1</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-blue-600">Day 1 - 8月14日 (周五)</h3>
+                            <p class="text-gray-600">抵达大阪 🏙️</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">11:20</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">抵达关西机场</h4>
+                                <p class="text-sm text-gray-600">提前完成"Visit Japan Web"申报，加快入境速度</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">13:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">前往酒店</h4>
+                                <p class="text-sm text-gray-600">乘坐南海电铁特急Rapi:t，34分钟直达难波站，票价1,490日元</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">14:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">心斋桥购物</h4>
+                                <p class="text-sm text-gray-600">酒店出门就是商圈，药妆店、服饰店林立</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">18:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">道顿堀美食夜游</h4>
+                                <p class="text-sm text-gray-600">与格力高广告牌合影，品尝章鱼烧、大阪烧等地道美食</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="ac-card">
+                    <div class="flex items-center mb-4">
+                        <div class="day-number mr-4">2</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-green-600">Day 2 - 8月15日 (周六)</h3>
+                            <p class="text-gray-600">环球影城 🎢</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">07:30</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">前往USJ</h4>
+                                <p class="text-sm text-gray-600">从难波站乘坐阪神难波线至西九条站，换乘JR梦咲线至环球城站，全程约30分钟</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">09:00-20:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">环球影城全天游玩</h4>
+                                <p class="text-sm text-gray-600">8月为旺季，建议提前购买快速通行券。园内餐饮预算约2,500-4,500日元/人</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">20:00后</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">返回酒店</h4>
+                                <p class="text-sm text-gray-600">享受一天的疲惫后好好休息</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 3 -->
+                <div class="ac-card">
+                    <div class="flex items-center mb-4">
+                        <div class="day-number mr-4">3</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-purple-600">Day 3 - 8月16日 (周日)</h3>
+                            <p class="text-gray-600">神户半日游 + 演出 🎭</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">09:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">前往神户</h4>
+                                <p class="text-sm text-gray-600">从大阪难波站乘坐阪神难波线"快速急行"直达神户三宫站，约42-45分钟，票价420日元</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">10:00-12:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">北野异人馆街</h4>
+                                <p class="text-sm text-gray-600">从三宫站步行约15分钟，感受异国风情。街区散步免费，入馆需购票(各馆300-700日元)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">12:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">神户牛午餐</h4>
+                                <p class="text-sm text-gray-600">三宫站附近享用高性价比神户牛午餐，约3,000-6,000日元</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">15:00</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">神户港乐园</h4>
+                                <p class="text-sm text-gray-600">与"BE KOBE"字标合影，欣赏港湾风景</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">傍晚</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">ES十周年演出</h4>
+                                <p class="text-sm text-gray-600">从三宫站乘坐港湾线(Port Liner)至市民广场站，约11分钟，票价340日元</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">演出后</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">返回大阪</h4>
+                                <p class="text-sm text-gray-600">注意最晚班次时间，阪神电铁末班车约24:15左右</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day 4 -->
+                <div class="ac-card">
+                    <div class="flex items-center mb-4">
+                        <div class="day-number mr-4">4</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-orange-600">Day 4 - 8月17日 (周一)</h3>
+                            <p class="text-gray-600">告别大阪 🛫</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">08:30</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">黑门市场早餐</h4>
+                                <p class="text-sm text-gray-600">从难波站步行约5分钟，品尝新鲜刺身、烤扇贝等</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">09:30</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">大阪城公园</h4>
+                                <p class="text-sm text-gray-600">地铁约10分钟到大阪城公园站，外观天守阁（登阁门票1,200日元）</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">11:00前</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">前往机场</h4>
+                                <p class="text-sm text-gray-600">乘坐南海电铁特急Rapi:t，约34分钟直达关西机场，票价1,490日元</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="ac-badge">11:35</span>
+                            <div>
+                                <h4 class="font-bold text-gray-800">抵达关西机场</h4>
+                                <p class="text-sm text-gray-600">为12:55的航班预留充足的办理登机及安检时间</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Budget Section -->
+    <section id="budget" class="py-8 relative z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="section-title mb-6">预算估算</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="ac-card">
+                    <div class="animal-icon">🐷</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">费用明细 (单人)</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg border-2 border-amber-200">
+                            <span>🏠 住宿 (3晚)</span>
+                            <span class="font-bold">12,000-18,000日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border-2 border-blue-200">
+                            <span>🚗 交通</span>
+                            <span class="font-bold">5,000-7,000日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg border-2 border-green-200">
+                            <span>🍜 餐饮 (4天)</span>
+                            <span class="font-bold">12,000-25,000日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg border-2 border-red-200">
+                            <span>🎟️ USJ门票</span>
+                            <span class="font-bold">8,600-11,900日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg border-2 border-purple-200">
+                            <span>🏛️ 景点门票</span>
+                            <span class="font-bold">0-1,500日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg border-2 border-orange-200">
+                            <span>🏠 大阪住宿税</span>
+                            <span class="font-bold">600日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-600 to-purple-600 text-white rounded-lg font-bold text-lg border-3 border-white">
+                            <span>📊 总计 (不含购物)</span>
+                            <span>约38,000-64,000日元</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="ac-progress-bar">
+                            <div class="ac-progress-fill" style="width: 65%;"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">预算完成度：中等</p>
+                    </div>
+                </div>
+                
+                <div class="ac-card">
+                    <div class="animal-icon">🦔</div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">伴手礼推荐</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-pink-50 rounded-lg border-2 border-pink-200">
+                            <div>
+                                <div class="font-bold text-gray-800">🍪 Baton d'or</div>
+                                <div class="text-xs text-gray-600">"Pocky界的LV"</div>
+                            </div>
+                            <span class="text-sm font-bold">1,000-3,000日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-indigo-50 rounded-lg border-2 border-indigo-200">
+                            <div>
+                                <div class="font-bold text-gray-800">🥔 厚切洋芋片</div>
+                                <div class="text-xs text-gray-600">高级版Calbee薯片</div>
+                            </div>
+                            <span class="text-sm font-bold">800-1,500日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-teal-50 rounded-lg border-2 border-teal-200">
+                            <div>
+                                <div class="font-bold text-gray-800">🥟 551蓬莱猪肉包</div>
+                                <div class="text-xs text-gray-600">大阪人从小吃到大</div>
+                            </div>
+                            <span class="text-sm font-bold">450-700日元/个</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-amber-50 rounded-lg border-2 border-amber-200">
+                            <div>
+                                <div class="font-bold text-gray-800">🍰 老爷爷起司蛋糕</div>
+                                <div class="text-xs text-gray-600">蓬松绵密的cheesecake</div>
+                            </div>
+                            <span class="text-sm font-bold">800-1,000日元</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-cyan-50 rounded-lg border-2 border-cyan-200">
+                            <div>
+                                <div class="font-bold text-gray-800">🎂 堂岛卷</div>
+                                <div class="text-xs text-gray-600">大阪代表性甜点</div>
+                            </div>
+                            <span class="text-sm font-bold">1,500-2,000日元</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 ac-card">
+                <div class="animal-icon">🐻</div>
+                <h3 class="text-lg font-bold text-gray-800 mb-3">🐾 实用贴士</h3>
+                <ul class="text-sm text-gray-600 space-y-2">
+                    <li class="flex items-start"><i class="fas fa-sun weather-sunny mr-2 mt-1"></i>8月大阪炎热潮湿，白天最高气温可达31-33°C，请做好防暑防晒</li>
+                    <li class="flex items-start"><i class="fas fa-cloud-showers-heavy weather-rainy mr-2 mt-1"></i>8月是台风多发期，建议备好雨具</li>
+                    <li class="flex items-start"><i class="fas fa-subway text-blue-500 mr-2 mt-1"></i>ICOCA卡全程通用，非常方便</li>
+                    <li class="flex items-start"><i class="fas fa-calendar-alt text-purple-500 mr-2 mt-1"></i>8月是日本旅游旺季，酒店价格会浮动，建议尽早预订</li>
+                    <li class="flex items-start"><i class="fas fa-tag text-green-500 mr-2 mt-1"></i>2025年9月1日起，大阪市将征收住宿税，每人每晚200日元</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 ac-style p-8 m-4 text-center">
+        <div class="animal-icon">🐿️</div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-3">出行计划方案</h3>
+        <p class="text-lg text-gray-600 mb-4"> furry friends 推荐路线 🐾</p>
+        <div class="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+            <span class="flex items-center"><i class="fas fa-calendar-alt mr-2"></i>8月14日-17日</span>
+            <span class="flex items-center"><i class="fas fa-map-marker-alt mr-2"></i>大阪 · 神户</span>
+            <span class="flex items-center"><i class="fas fa-ticket-alt mr-2"></i>环球影城 + 演出</span>
+            <span class="flex items-center"><i class="fas fa-heart text-red-500 mr-2"></i>治愈系旅行</span>
+        </div>
+        <div class="mt-6">
+            <button class="ac-button px-6 py-3 text-lg">开始你的旅程！</button>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add floating animation to animal icons
+        document.querySelectorAll('.animal-icon').forEach(icon => {
+            icon.style.animation = 'float 3s ease-in-out infinite';
+        });
+
+        // Add click effect to buttons
+        document.querySelectorAll('.ac-button').forEach(button => {
+            button.addEventListener('mousedown', function() {
+                this.style.transform = 'translateY(2px)';
+                this.style.boxShadow = '0 1px 0 #a8947f';
+            });
+            
+            button.addEventListener('mouseup', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 3px 0 #a8947f';
+            });
+            
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 3px 0 #a8947f';
+            });
+        });
+
+        // Progress bar animation on scroll
+        window.addEventListener('scroll', function() {
+            const progressBars = document.querySelectorAll('.ac-progress-fill');
+            progressBars.forEach(bar => {
+                const rect = bar.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom >= 0) {
+                    bar.style.width = bar.getAttribute('data-width') || '65%';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
